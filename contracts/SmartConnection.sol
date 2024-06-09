@@ -26,7 +26,6 @@ contract Assessment {
         require(msg.sender == owner, "You are not the owner of this account");
 
         // perform transaction
-        
         balance += _amount;
 
         // assert transaction completed successfully
@@ -58,25 +57,4 @@ contract Assessment {
         // emit the event
         emit Withdraw(_withdrawAmount);
     }
-
-    function checkOwner() public pure returns (string memory){
-        string memory name = "Shivam Gupta";
-        return name;
-    }
-
-    function addition(uint var1, uint var2) public pure returns (uint) {
-        return var1 + var2;
-    
-    }
-
-    function subtraction(uint var1, uint var2) public pure returns (uint) {
-        require(var1>=var2, "Value of a must be grater than b");
-        return var1 - var2;
-    }
-
-    function multiplication(uint var1, uint var2) public pure returns (uint) {
-        return var1 * var2;
-    }
-
 }
-
