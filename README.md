@@ -1,6 +1,6 @@
 # New Addition 
 - Transfer Money from one account to another
-- And transfer Shop(COntract Ownership from one vendor to another
+- And transfer Shop(Contract Ownership from one vendor to another
 - Rent out Your shop at some interest rate 
 
 ## Fruit Market
@@ -29,5 +29,4 @@ After cloning the github, you will want to do the following to get the code runn
 - Back in the first terminal, type npm run dev to launch the front-end.
   
 ### After this, the project will be running on your localhost. Typically at http://localhost:3000/
-![image](https://github.com/ShivamGMeta/Module2_Eth-Avax/assets/149230344/b8f50f05-d3fe-42cf-b1fc-8e5d95145e31)
 
