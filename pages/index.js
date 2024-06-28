@@ -7,8 +7,10 @@ export default function HomePage() {
   const [account, setAccount] = useState(undefined);
   const [atm, setATM] = useState(undefined);
   const [balance, setBalance] = useState(undefined);
-  const [message, setMessage] = useState("");
-  const [ownerName, setOwnerName] = useState("Shivam Gupta");
+  const [owner, setOwner] = useState(undefined);
+  const [newOwner, setNewOwner] = useState("");
+  const [interestRate, setInterestRate] = useState(undefined);
+  const [newInterestRate, setNewInterestRate] = useState("");
 
   const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
   const atmABI = atm_abi.abi;
@@ -27,7 +29,7 @@ export default function HomePage() {
   const handleAccount = (account) => {
     if (account) {
       console.log("Account connected: ", account);
-      setAccount(account);
+      setAccount(account[0]);
     } else {
       console.log("No account found");
     }
@@ -60,6 +62,18 @@ export default function HomePage() {
     }
   };
 
+  const getOwner = async () => {
+    if (atm) {
+      setOwner(await atm.getOwner());
+    }
+  };
+
+  const getInterestRate = async () => {
+    if (atm) {
+      setInterestRate((await atm.getInterestRate()).toNumber() / 100);
+    }
+  };
+
   const deposit = async () => {
     if (atm) {
       let tx = await atm.deposit(1);
@@ -76,10 +90,19 @@ export default function HomePage() {
     }
   };
 
-  const checkOwner = async () => {
-    if (atm) {
-      let owner = await atm.checkOwner();
-      setOwnerName(owner);
+  const transferOwnership = async () => {
+    if (atm && newOwner) {
+      let tx = await atm.setOwner(newOwner);
+      await tx.wait();
+      getOwner();
+    }
+  };
+
+  const updateInterestRate = async () => {
+    if (atm && newInterestRate) {
+      let tx = await atm.setInterestRate(parseInt(newInterestRate));
+      await tx.wait();
+      getInterestRate();
     }
   };
 
@@ -91,66 +114,51 @@ export default function HomePage() {
 
     // Check to see if user is connected. If not, connect to their account
     if (!account) {
-      return (
-        <button className="connect-btn" onClick={connectAccount}>
-          Please connect your Metamask wallet
-        </button>
-      );
+      return <button className="connect-btn" onClick={connectAccount}>Please connect your Metamask wallet</button>;
     }
 
     if (balance === undefined) {
       getBalance();
     }
 
+    if (owner === undefined) {
+      getOwner();
+    }
+
+    if (interestRate === undefined) {
+      getInterestRate();
+    }
+
     return (
       <div className="account-container">
         <p className="account-info">Your Account: {account}</p>
-        <p className="account-info">Your Balance: {balance}</p>
-        <p className="account-info">Owner Name: {ownerName}</p>
-        <button className="action-btn" onClick={deposit}>
-          Deposit 1 ETH
-        </button>
-        <button className="action-btn" onClick={withdraw}>
-          Withdraw 1 ETH
-        </button>
-        <div className="fruit-market">
-          <h3>Buy Fruits</h3>
-          <div className="fruit-buttons">
-            <button className="action-btn" onClick={() => purchaseFruit("Mango")}>
-              Buy Mango
-            </button>
-            <button className="action-btn" onClick={() => purchaseFruit("Apple")}>
-              Buy Apple
-            </button>
-            <button className="action-btn" onClick={() => purchaseFruit("Banana")}>
-              Buy Banana
-            </button>
-            <button className="action-btn" onClick={() => purchaseFruit("Grapes")}>
-              Buy Grapes
-            </button>
-            <button className="action-btn" onClick={() => purchaseFruit("Watermelon")}>
-              Buy Watermelon
-            </button>
-            <button className="action-btn" onClick={() => purchaseFruit("Muskmelon")}>
-              Buy Muskmelon
-            </button>
-            <button className="action-btn" onClick={() => purchaseFruit("Pomegranate")}>
-              Buy Pomegranate
-            </button>
-          </div>
+        <p className="account-info">Your Balance: {balance} ETH</p>
+        <p className="account-info">Contract Owner: {owner}</p>
+        <p className="account-info">Current Interest Rate: {interestRate}%</p>
+        <button className="action-btn" onClick={deposit}>Deposit 1 ETH</button>
+        <button className="action-btn" onClick={withdraw}>Withdraw 1 ETH</button>
+        <div className="transfer-ownership">
+          <h3>Transfer Ownership</h3>
+          <input
+            type="text"
+            placeholder="New owner's address"
+            value={newOwner}
+            onChange={(e) => setNewOwner(e.target.value)}
+          />
+          <button className="action-btn" onClick={transferOwnership}>Transfer Ownership</button>
         </div>
-        {message && <p className="message">{message}</p>}
+        <div className="update-interest-rate">
+          <h3>Set Interest Rate</h3>
+          <input
+            type="number"
+            placeholder="New interest rate (in basis points)"
+            value={newInterestRate}
+            onChange={(e) => setNewInterestRate(e.target.value)}
+          />
+          <button className="action-btn" onClick={updateInterestRate}>Update Interest Rate</button>
+        </div>
       </div>
     );
-  };
-
-  const purchaseFruit = async (fruit) => {
-    if (atm) {
-      let tx = await atm.withdraw(1); // Assuming withdraw function for subtracting 1 ETH
-      await tx.wait();
-      setMessage(`Fruit bought successfully: ${fruit}`);
-      getBalance();
-    }
   };
 
   useEffect(() => {
@@ -159,9 +167,7 @@ export default function HomePage() {
 
   return (
     <main className="container">
-      <header>
-        <h1>Welcome to the Metacrafters ATM!</h1>
-      </header>
+      <header><h1>Welcome to the Metacrafters ATM!</h1></header>
       {initUser()}
       <style jsx>{`
         .container {
@@ -205,21 +211,15 @@ export default function HomePage() {
         .action-btn:hover {
           background-color: #0056b3;
         }
-        .fruit-market {
+        .transfer-ownership, .update-interest-rate {
           margin-top: 20px;
         }
-        .fruit-buttons {
-          display: flex;
-          flex-wrap: wrap;
-          justify-content: center;
-        }
-        .fruit-buttons button {
-          margin: 5px;
-        }
-        .message {
-          color: green;
-          font-weight: bold;
-          margin-top: 20px;
+        input {
+          padding: 10px;
+          width: calc(100% - 20px);
+          margin-top: 10px;
+          border: 1px solid #ccc;
+          border-radius: 5px;
         }
       `}</style>
     </main>
