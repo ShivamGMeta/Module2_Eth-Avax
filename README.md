@@ -1,7 +1,11 @@
-# Module2_Eth-Avax
+# New Addition 
+- Transfer Money from one account to another
+- And transfer Shop(COntract Ownership from one vendor to another
+- Rent out Your shop at some interest rate 
 
-## React Crypto ATM
-- This is a simple React component for a Crypto ATM application. It gives permissions to users to connect their MetaMask wallet, view their  account balance, deposit and withdraw ETH, check the owner's name and a simple calculator with limited operations.
+## Fruit Market
+- The fruit market feature allows users to simulate the purchase of various fruits using their Ethereum balance. Each fruit costs 1 ETH, and successful purchases are reflected in the user's balance, showcasing a practical use of smart contracts for transaction handling.
+
 
 ## Features: The Crypto ATM component provides the following features:
 
