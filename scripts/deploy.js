@@ -7,16 +7,20 @@ const hre = require("hardhat");
 
 async function main() {
   const initBalance = 1;
+  const initialOwner = "0xYourOwnerAddressHere"; // Replace with the actual address of Shivam Gupta
+  const initialInterestRate = 700; // 7% in basis points
+
   const Assessment = await hre.ethers.getContractFactory("Assessment");
-  const assessment = await Assessment.deploy(initBalance);
+  const assessment = await Assessment.deploy(initBalance, initialOwner, initialInterestRate);
   await assessment.deployed();
 
-  console.log(`A contract with balance of ${initBalance} eth deployed to ${assessment.address}`);
+  console.log(`A contract with balance of ${initBalance} ETH, owner ${initialOwner}, and interest rate ${initialInterestRate / 100}% deployed to ${assessment.address}`);
 }
-
 // We recommend this pattern to be able to use async/await everywhere
 // and properly handle errors.
 main().catch((error) => {
   console.error(error);
   process.exitCode = 1;
 });
+
+
